@@ -18,13 +18,14 @@ namespace XmlSchemaClassGenerator.Console
     {
         static void Main(string[] args)
         {
+            args = new List<string>() { @"C:\Data\TestBed\schemas\V20170715-Tests\02-Enum\*.xsd" }.ToArray();
             var showHelp = args.Length == 0;
-            var namespaces = new List<string>();
-            var outputFolder = (string)null;
+            var namespaces = new List<string>() { "=GeneratedModel2017OriginalFork" };
+            var outputFolder = @"C:\Data\TestBed\EpaGateway\EpaGateway\GeneratedModel2017OriginalFork";
             Type integerType = null;
             var useIntegerTypeAsFallback = false;
             var namespacePrefix = "";
-            var verbose = false;
+            var verbose = true;
             var nullables = false;
             var pclCompatible = false;
             var enableDataBinding = false;
@@ -44,14 +45,14 @@ namespace XmlSchemaClassGenerator.Console
             var enableUpaCheck = true;
             var generateComplexTypesForCollections = true;
             var useShouldSerialize = false;
-            var separateClasses = false;
+            var separateClasses = true;
             var separateSubstitutes = false;
             var collectionSettersMode = CollectionSettersMode.Private;
             var doNotForceIsNullable = false;
             var compactTypeNames = false;
             var commentLanguages = new[] { "en" };
             var supportedCommentLanguages = new[] { "en", "de" };
-            var uniqueTypeNamesAcrossNamespaces = false;
+            var uniqueTypeNamesAcrossNamespaces = true;
             var createGeneratedCodeAttributeVersion = true;
             var netCoreSpecificCode = false;
             var generateCommandLineArgs = true;
@@ -183,7 +184,7 @@ without backing field initialization for collections
                 EntityFramework = entityFramework,
                 GenerateInterfaces = interfaces,
                 NamingScheme = pascal ? NamingScheme.PascalCase : NamingScheme.Direct,
-                AssemblyVisible=assembly,
+                AssemblyVisible = assembly,
                 CollectionType = collectionType,
                 CollectionImplementationType = collectionImplementationType,
                 CodeTypeReferenceOptions = codeTypeReferenceOptions,

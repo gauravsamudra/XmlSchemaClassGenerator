@@ -722,7 +722,7 @@ namespace XmlSchemaClassGenerator
         private static List<EnumValueModel> EnsureEnumValuesUnique(List<EnumValueModel> enumModelValues)
         {
             var enumValueGroups = from enumValue in enumModelValues
-                group enumValue by enumValue.Name;
+                                  group enumValue by enumValue.Name;
 
             foreach (var g in enumValueGroups)
             {
@@ -877,25 +877,29 @@ namespace XmlSchemaClassGenerator
 
                     propertyName = typeModel.GetUniquePropertyName(propertyName);
 
-                    property = new PropertyModel(_configuration)
-                    {
-                        OwningType = typeModel,
-                        XmlSchemaName = effectiveElement.QualifiedName,
-                        Name = propertyName,
-                        OriginalPropertyName = originalPropertyName,
-                        Type = substitute?.Type ?? CreateTypeModel(source, element.ElementSchemaType, elementQualifiedName),
-                        IsNillable = element.IsNillable,
-                        IsNullable = item.MinOccurs < 1.0m || (item.XmlParent is XmlSchemaChoice),
-                        IsCollection = item.MaxOccurs > 1.0m || particle.MaxOccurs > 1.0m, // http://msdn.microsoft.com/en-us/library/vstudio/d3hx2s7e(v=vs.100).aspx
-                        DefaultValue = element.DefaultValue ?? ((item.MinOccurs >= 1.0m && !(item.XmlParent is XmlSchemaChoice)) ? element.FixedValue : null),
-                        FixedValue = element.FixedValue,
-                        Form = element.Form == XmlSchemaForm.None ? element.GetSchema().ElementFormDefault : element.Form,
-                        XmlNamespace = !string.IsNullOrEmpty(effectiveElement.QualifiedName.Namespace) && effectiveElement.QualifiedName.Namespace != typeModel.XmlSchemaName.Namespace
-                            ? effectiveElement.QualifiedName.Namespace : null,
-                        XmlParticle = item.XmlParticle,
-                        XmlParent = item.XmlParent,
-                        Particle = item
-                    };
+                    property = new PropertyModel(_configuration);
+
+                    property.OwningType = typeModel;
+                    property.XmlSchemaName = effectiveElement.QualifiedName;
+                    property.Name = propertyName;
+                    property.OriginalPropertyName = originalPropertyName;
+                    property.Type = substitute?.Type ?? CreateTypeModel(source, element.ElementSchemaType, elementQualifiedName);
+                    property.IsNillable = element.IsNillable
+                        || ((item.XmlParticle as XmlSchemaElement)?.ElementSchemaType as XmlSchemaSimpleType)?.Content is XmlSchemaSimpleTypeRestriction;
+                    
+                    property.IsNullable = item.MinOccurs < 1.0m 
+                        || (item.XmlParent is XmlSchemaChoice);
+                    property.IsCollection = item.MaxOccurs > 1.0m 
+                        || particle.MaxOccurs > 1.0m; // http://msdn.microsoft.com/en-us/library/vstudio/d3hx2s7e(v=vs.100).aspx
+                    property.DefaultValue = element.DefaultValue ?? ((item.MinOccurs >= 1.0m && !(item.XmlParent is XmlSchemaChoice)) ? element.FixedValue : null);
+                    property.FixedValue = element.FixedValue;
+                    property.Form = element.Form == XmlSchemaForm.None ? element.GetSchema().ElementFormDefault : element.Form;
+                    property.XmlNamespace = !string.IsNullOrEmpty(effectiveElement.QualifiedName.Namespace) && effectiveElement.QualifiedName.Namespace != typeModel.XmlSchemaName.Namespace
+                        ? effectiveElement.QualifiedName.Namespace : null;
+                    property.XmlParticle = item.XmlParticle;
+                    property.XmlParent = item.XmlParent;
+                    property.Particle = item;
+
 
                     if (property.IsArray && !_configuration.GenerateComplexTypesForCollections)
                     {
